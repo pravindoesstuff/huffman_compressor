@@ -34,6 +34,40 @@ impl<T: std::cmp::PartialOrd> Heap<T> {
             self.bubble_up(parent_index);
         }
     }
-    fn pop(&mut self, index: usize) {}
-    fn sift_down(&mut self, index: usize) {}
+    pub fn pop(&mut self) -> Option<T> {
+        if self.heap.is_empty() {
+            return None;
+        }
+        let returned_item = self.heap.swap_remove(0);
+        self.sift_down(0);
+        Some(returned_item)
+    }
+    fn sift_down(&mut self, index: usize) {
+        let largest_child = self.cmp_children(index);
+        if index == largest_child {
+            return;
+        }
+        self.heap.swap(index, largest_child);
+        self.sift_down(largest_child);
+    }
+
+    fn cmp_children(&self, index: usize) -> usize {
+        let right_child = Self::right_child(index);
+        if right_child >= self.heap.len() {
+            return index;
+        }
+        let left_child = Self::left_child(index);
+        if left_child >= self.heap.len() {
+            return if self.heap[right_child] > self.heap[index] {
+                right_child
+            } else {
+                index
+            };
+        }
+        if self.heap[left_child] > self.heap[right_child] {
+            left_child
+        } else {
+            right_child
+        }
+    }
 }
