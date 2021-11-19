@@ -8,6 +8,12 @@ impl<T: std::cmp::PartialOrd> Heap<T> {
     pub fn new() -> Self {
         Self { heap: Vec::new() }
     }
+    pub fn is_empty(&self) -> bool {
+        self.heap.is_empty()
+    }
+    pub fn len(&self) -> usize {
+        self.heap.len()
+    }
     pub fn peek(&self) -> Option<&T> {
         self.heap.first()
     }
@@ -29,7 +35,7 @@ impl<T: std::cmp::PartialOrd> Heap<T> {
             return;
         }
         let parent_index = Self::parent(index);
-        if self.heap[index] > self.heap[parent_index] {
+        if self.heap[index] < self.heap[parent_index] {
             self.heap.swap(index, parent_index);
             self.bubble_up(parent_index);
         }
@@ -58,13 +64,13 @@ impl<T: std::cmp::PartialOrd> Heap<T> {
         }
         let left_child = Self::left_child(index);
         if left_child >= self.heap.len() {
-            return if self.heap[right_child] > self.heap[index] {
+            return if self.heap[right_child] < self.heap[index] {
                 right_child
             } else {
                 index
             };
         }
-        if self.heap[left_child] > self.heap[right_child] {
+        if self.heap[left_child] < self.heap[right_child] {
             left_child
         } else {
             right_child
