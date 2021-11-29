@@ -3,12 +3,11 @@ use std::cmp::Ordering;
 
 #[derive(Debug, Eq)]
 pub(crate) struct Node {
-    character: Option<char>,
+    pub(crate) character: Option<char>,
     weight: usize,
-    left: Option<Box<Node>>,
-    right: Option<Box<Node>>,
+    pub(crate) left: Option<Box<Node>>,
+    pub(crate) right: Option<Box<Node>>,
 }
-
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -64,5 +63,5 @@ pub(crate) fn build_tree(mut characters: Heap<Node>) -> Node {
         };
         characters.insert(new_node);
     }
-    return characters.pop().unwrap();
+    characters.pop().unwrap()
 }
