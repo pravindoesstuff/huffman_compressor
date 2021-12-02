@@ -2,8 +2,9 @@ mod heap;
 mod huffman;
 
 use crate::huffman::{build_tree, generate_weights, new_characters, Node};
-use bitstream_io::{huffman::compile_read_tree, BigEndian};
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::prelude::*;
 
 fn main() {
     let mut str = String::from("happy hip hop");
@@ -14,18 +15,19 @@ fn main() {
     let mut ch_map = HashMap::new();
     tree_view(tree, Vec::new(), &mut ch_map);
     let bits = encode_file(&ch_map, str);
-    write_tree(ch_map);
-    println!("{:#?}", bits);
+    write_tree(ch_map.clone(), "filename");
 }
 
-fn write_tree(character_mapping: HashMap<char, Vec<u8>>) {
-    print!("{:#?}", character_mapping);
-    let mut character_vec = Vec::new();
+fn write_tree(character_mapping: HashMap<char, Vec<u8>>, file_name: &str) {
+    let mut file = File::create(file_name).unwrap();
     for (ch, bits) in character_mapping {
-        character_vec.push((ch, bits));
+        let mut concat_bits = String::with_capacity(bits.len());
+        for ch in bits {
+            concat_bits.push((ch + '0' as u8) as char);
+        }
+        let data = format!("{}\n{}\n", ch, concat_bits);
+        file.write_all(data.as_bytes()).unwrap();
     }
-    character_vec.sort_by(|a, b| a.1.len().partial_cmp(&b.1.len()).unwrap()); //Vector must be sorted prior to compilation
-    let compiled_tree = compile_read_tree::<BigEndian, char>(character_vec);
 }
 
 fn encode_file(character_map: &HashMap<char, Vec<u8>>, characters: String) -> Vec<u8> {
