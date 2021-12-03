@@ -2,6 +2,7 @@ mod heap;
 mod huffman;
 
 use crate::huffman::{build_tree, generate_weights, new_characters, Node};
+use bitstream_io::{BigEndian, BitWrite, BitWriter};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
@@ -16,6 +17,7 @@ fn main() {
     tree_view(tree, Vec::new(), &mut ch_map);
     let bits = encode_file(&ch_map, str);
     write_tree(ch_map.clone(), "filename");
+    write_bits(&bits, "file_bits");
 }
 
 fn write_tree(character_mapping: HashMap<char, Vec<u8>>, file_name: &str) {
@@ -27,6 +29,14 @@ fn write_tree(character_mapping: HashMap<char, Vec<u8>>, file_name: &str) {
         }
         let data = format!("{}\n{}\n", ch, concat_bits);
         file.write_all(data.as_bytes()).unwrap();
+    }
+}
+
+fn write_bits(bits: &[u8], filename: &str) {
+    let mut file = File::create(filename).unwrap();
+    let mut b_writer = BitWriter::endian(&mut file, BigEndian);
+    for bit in bits {
+        b_writer.write_bit(*bit != 0).unwrap();
     }
 }
 

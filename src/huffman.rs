@@ -1,4 +1,5 @@
 use crate::heap::Heap;
+use bitstream_io::BitReader;
 use std::cmp::Ordering;
 
 #[derive(Debug, Eq)]
@@ -23,6 +24,8 @@ impl PartialEq for Node {
         self.weight == other.weight
     }
 }
+
+pub(crate) fn read_tree(file_name: &str) {}
 
 // Constructs HuffmanTree with Nodes, using an array that defines character frequencies
 pub(crate) fn new_characters(count: &[usize]) -> Heap<Node> {
